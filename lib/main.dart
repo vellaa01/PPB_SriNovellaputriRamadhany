@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/pengaturan.dart';
+import 'pengaturan.dart';
 import 'form_mahasiswa.dart';
 import 'tentang_aplikasi.dart';
 
@@ -103,9 +103,9 @@ class _HomeContent extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: const [
-              Icon(Icons.menu, size: 48),
+              Icon(Icons.people, size: 48),
               SizedBox(height: 12),
-              Text('Tap ikon ☰ atau geser dari kiri untuk membuka Drawer.'),
+              Text('Ini Tugas Sri Novellaputri Ramadhany'),
             ],
           ),
         ),
@@ -125,4 +125,3 @@ class DaftarMahasiswaPage extends StatelessWidget {
 );
 }
 }
-
