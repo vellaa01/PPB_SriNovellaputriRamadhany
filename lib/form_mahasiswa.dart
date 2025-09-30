@@ -8,17 +8,33 @@ class FormMahasiswaPage extends StatefulWidget {
 }
 
 class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
-  // --- Form key & step
   final _formKey = GlobalKey<FormState>();
-  int _currentStep = 0; // hanya 1 step (index 0)
+  int _currentStep = 0;
 
-  // --- Controller & field (BAGIAN 1)
+  // --- Controller
   final cNama = TextEditingController();
   final cNpm = TextEditingController();
   final cEmail = TextEditingController();
   final cAlamat = TextEditingController();
+
   DateTime? tglLahir;
   TimeOfDay? jamBimbingan;
+
+  // --- Dropdown value
+  String? selectedProdi;
+  String? selectedFakultas;
+
+  final List<String> listProdi = [
+    'Sistem Informasi',
+    'Teknik Informatika',
+  ];
+
+  final List<String> listFakultas = [
+    'Ilmu Komputer',
+    'Ekonomi Bisnis',
+    'Hukum',
+    'Teknik',
+  ];
 
   String get tglLahirLabel => tglLahir == null
       ? 'Pilih tanggal'
@@ -80,6 +96,8 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
       'npm': cNpm.text.trim(),
       'email': cEmail.text.trim(),
       'alamat': cAlamat.text.trim(),
+      'prodi': selectedProdi ?? '-',
+      'fakultas': selectedFakultas ?? '-',
       'tglLahir': tglLahirLabel,
       'jamBimbingan': jamLabel,
     };
@@ -137,7 +155,6 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
               controller: cNama,
               decoration: const InputDecoration(
                 labelText: 'Nama Lengkap',
-                hintText: 'cth: Aulia Rahman',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.person),
               ),
@@ -149,7 +166,6 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
               controller: cNpm,
               decoration: const InputDecoration(
                 labelText: 'NPM',
-                hintText: '231063*****',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.numbers),
               ),
@@ -161,7 +177,6 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
               controller: cEmail,
               decoration: const InputDecoration(
                 labelText: 'Email',
-                hintText: 'unsika123@gmail.com',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.email),
               ),
@@ -169,11 +184,45 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
                   (v == null || v.trim().isEmpty) ? 'Email wajib diisi' : null,
             ),
             const SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              value: selectedProdi,
+              decoration: const InputDecoration(
+                labelText: 'Program Studi',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.school),
+              ),
+              items: listProdi
+                  .map((prodi) => DropdownMenuItem(
+                        value: prodi,
+                        child: Text(prodi),
+                      ))
+                  .toList(),
+              onChanged: (val) => setState(() => selectedProdi = val),
+              validator: (v) =>
+                  v == null ? 'Program studi wajib dipilih' : null,
+            ),
+            const SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              value: selectedFakultas,
+              decoration: const InputDecoration(
+                labelText: 'Fakultas',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.account_balance),
+              ),
+              items: listFakultas
+                  .map((fak) => DropdownMenuItem(
+                        value: fak,
+                        child: Text(fak),
+                      ))
+                  .toList(),
+              onChanged: (val) => setState(() => selectedFakultas = val),
+              validator: (v) => v == null ? 'Fakultas wajib dipilih' : null,
+            ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: cAlamat,
               decoration: const InputDecoration(
                 labelText: 'Alamat',
-                hintText: 'cth: Jl. Merdeka No. 123',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.home),
               ),
@@ -211,10 +260,10 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
         key: _formKey,
         child: Stepper(
           type: StepperType.vertical,
-          currentStep: _currentStep, // selalu 0
+          currentStep: _currentStep,
           steps: steps,
-          onStepContinue: _simpan, // tombol lanjut = Simpan untuk 1 step
-          onStepCancel: null, // tidak perlu tombol kembali
+          onStepContinue: _simpan,
+          onStepCancel: null,
           controlsBuilder: (context, details) {
             return Row(
               children: [
