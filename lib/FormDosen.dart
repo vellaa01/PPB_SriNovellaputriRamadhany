@@ -1,54 +1,42 @@
 import 'package:flutter/material.dart';
 
-class FormMahasiswaPage extends StatefulWidget {
-  const FormMahasiswaPage({super.key});
+class FormDosen extends StatefulWidget {
+  const FormDosen({super.key});
+  
+  State<FormDosen> createState() => _FormDosen();
+}
 
-  @override
-  State<FormMahasiswaPage> createState() => _FormMahasiswaPageState();
-} 
-
-class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
+class _FormDosen extends State<FormDosen> {
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
 
   // --- Controller
+  final cNIDN = TextEditingController();
   final cNama = TextEditingController();
-  final cNpm = TextEditingController();
   final cEmail = TextEditingController();
-  final cAlamat = TextEditingController();
+  final cNoTelepon = TextEditingController();
 
-  DateTime? tglLahir;
-  TimeOfDay? jamBimbingan;
+  DateTime? TanggalLahir;
 
   // --- Dropdown value
-  String? selectedProdi;
-  String? selectedFakultas;
+  String? selectedHomeBase;
 
-  final List<String> listProdi = [
+  final List<String> listHomeBase = [
     'Sistem Informasi',
     'Teknik Informatika',
   ];
 
-  final List<String> listFakultas = [
-    'Ilmu Komputer',
-    'Ekonomi Bisnis',
-    'Hukum',
-    'Teknik',
-  ];
 
-  String get tglLahirLabel => tglLahir == null
+  String get tglLahirLabel => TanggalLahir == null
       ? 'Pilih tanggal'
-      : '${tglLahir!.day}/${tglLahir!.month}/${tglLahir!.year}';
-
-  String get jamLabel =>
-      jamBimbingan == null ? 'Pilih jam' : jamBimbingan!.format(context);
+      : '${TanggalLahir!.day}/${TanggalLahir!.month}/${TanggalLahir!.year}';
 
   @override
   void dispose() {
+    cNIDN.dispose();
     cNama.dispose();
-    cNpm.dispose();
     cEmail.dispose();
-    cAlamat.dispose();
+    cNoTelepon.dispose();
     super.dispose();
   }
 
@@ -60,15 +48,7 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
       lastDate: DateTime(now.year + 1),
       initialDate: DateTime(now.year - 18, now.month, now.day),
     );
-    if (res != null) setState(() => tglLahir = res);
-  }
-
-  Future<void> _pickTime() async {
-    final res = await showTimePicker(
-      context: context,
-      initialTime: const TimeOfDay(hour: 9, minute: 0),
-    );
-    if (res != null) setState(() => jamBimbingan = res);
+    if (res != null) setState(() => TanggalLahir = res);
   }
 
   void _simpan() {
@@ -78,34 +58,25 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
       );
       return;
     }
-    if (tglLahir == null) {
+    if (TanggalLahir == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Tanggal lahir belum dipilih')),
       );
       return;
     }
-    if (jamBimbingan == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Jam bimbingan belum dipilih')),
-      );
-      return;
-    }
 
     final data = {
-      'nama': cNama.text.trim(),
-      'npm': cNpm.text.trim(),
-      'email': cEmail.text.trim(),
-      'alamat': cAlamat.text.trim(),
-      'prodi': selectedProdi ?? '-',
-      'fakultas': selectedFakultas ?? '-',
-      'tglLahir': tglLahirLabel,
-      'jamBimbingan': jamLabel,
+      'Nama': cNama.text.trim(),
+      'NIDN': cNIDN.text.trim(),
+      'Email': cEmail.text.trim(),
+      'Nomor Handphone': cNoTelepon.text.trim(),
+      'Tanggal Lahir': tglLahirLabel,
     };
 
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Ringkasan Data Mahasiswa'),
+        title: const Text('Ringkasan Data Dosen'),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,13 +115,24 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
   Widget build(BuildContext context) {
     final steps = <Step>[
       Step(
-        title: const Text('Identitas Mahasiswa'),
+        title: const Text('Isi Identitas'),
         isActive: true,
         state: StepState.indexed,
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _sectionTitle('Data Pribadi'),
+          _sectionTitle('Data Pribadi'),
+            TextFormField(
+              controller: cNIDN,
+              decoration: const InputDecoration(
+                labelText: 'NIDN',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.work),
+              ),
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'NIDN  wajib diisi' : null,
+            ),
+            const SizedBox(height: 10),
             TextFormField(
               controller: cNama,
               decoration: const InputDecoration(
@@ -159,18 +141,18 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
                 prefixIcon: Icon(Icons.person),
               ),
               validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Nama wajib diisi' : null,
+                  (v == null || v.trim().isEmpty) ? 'Nama lengkap wajib diisi' : null,
             ),
             const SizedBox(height: 10),
             TextFormField(
-              controller: cNpm,
+              controller: cNoTelepon,
               decoration: const InputDecoration(
-                labelText: 'NPM',
+                labelText: 'Nomor Handphone',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.numbers),
               ),
               validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'NPM wajib diisi' : null,
+                  (v == null || v.trim().isEmpty) ? 'Nomor handphone wajib diisi' : null,
             ),
             const SizedBox(height: 10),
             TextFormField(
@@ -185,49 +167,21 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
-              value: selectedProdi,
+              value: selectedHomeBase,
               decoration: const InputDecoration(
-                labelText: 'Program Studi',
+                labelText: 'Home Base',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.school),
               ),
-              items: listProdi
+              items: listHomeBase
                   .map((prodi) => DropdownMenuItem(
                         value: prodi,
                         child: Text(prodi),
                       ))
                   .toList(),
-              onChanged: (val) => setState(() => selectedProdi = val),
+              onChanged: (val) => setState(() => selectedHomeBase = val),
               validator: (v) =>
-                  v == null ? 'Program studi wajib dipilih' : null,
-            ),
-            const SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              value: selectedFakultas,
-              decoration: const InputDecoration(
-                labelText: 'Fakultas',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.account_balance),
-              ),
-              items: listFakultas
-                  .map((fak) => DropdownMenuItem(
-                        value: fak,
-                        child: Text(fak),
-                      ))
-                  .toList(),
-              onChanged: (val) => setState(() => selectedFakultas = val),
-              validator: (v) => v == null ? 'Fakultas wajib dipilih' : null,
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: cAlamat,
-              decoration: const InputDecoration(
-                labelText: 'Alamat',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.home),
-              ),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Alamat wajib diisi' : null,
+                  v == null ? ' Home Base wajib dipilih' : null,
             ),
             const SizedBox(height: 10),
             Row(
@@ -239,14 +193,6 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
                     onPressed: _pickDate,
                   ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.schedule),
-                    label: Text(jamLabel),
-                    onPressed: _pickTime,
-                  ),
-                ),
               ],
             ),
           ],
@@ -255,7 +201,7 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Formulir Mahasiswa'), titleTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+      appBar: AppBar(title: const Text('Formulir Dosen'), titleTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
       body: Form(
         key: _formKey,
         child: Stepper(
@@ -267,6 +213,7 @@ class _FormMahasiswaPageState extends State<FormMahasiswaPage> {
           controlsBuilder: (context, details) {
             return Row(
               children: [
+                
                 ElevatedButton.icon(
                   icon: const Icon(Icons.check),
                   label: const Text('Simpan'),
